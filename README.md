@@ -8,15 +8,10 @@ A fejlesztés során a **MariaDB Community 10.10.3**-as verziójával dolgozunk,
 
 MariaDB szerver futtatásához fordulj a hivatalos oldalukhoz, illetve a diszribúció wiki-jéhez!
 
-Parancssorból importáljuk a táblákat a `schema.sql` fájl segítségével (a database mappából):
-```
-mariadb < schema.sql
-```
-
-Ez a fájl tartalmazza az adatbázis sémáját, de fel szükséges tölteni alapvető információkkal, mint például engedélyekkel.
+Parancssorból importáljuk a táblákat a `schema.sql` fájl segítségével. Ez a fájl tartalmazza az adatbázis sémáját, de fel szükséges tölteni alapvető információkkal, a felhasználói adatok mellett, mint például engedélyekkel.
 
 Ha más felhasználónak hoztuk létre az adatbázist, akkor annak a felhasználónak az adatbázisába töltsük be.
 
 Az adatbázisból való "dump"-olásról, és az sql fájl betöltéséről a [MariaDB weboldalán olvashatunk](https://mariadb.com/kb/en/mariadb-dumpmysqldump/).
 
-Nyissuk meg az api mappán belül található `options.json` fájlt egy szövegszerkesztő programmal, és írjuk át a `user` értékét a felhasználónevünkre (ha más felhasználónak hoztuk létre az adatbázist akkor annak a nevére), illetve a `password` értékét a jelszóra, ha be lett állítva, egyébként maradjon üresen.
+Nyissuk meg a szerver fájljain belül található `options.json` fájlt egy szövegszerkesztő programmal, és írjuk át a `user` értékét a felhasználónevünkre (ha más felhasználónak hoztuk létre az adatbázist akkor annak a nevére), illetve a `password` értékét a jelszóra, ha be lett állítva, egyébként maradjon üresen.

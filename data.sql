@@ -175,8 +175,12 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'group',
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'group', 'Old', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'group', 'HeadTUID', b'1');
 
-INSERT INTO `route_access` VALUES (1, '/api/school', b'1', b'0');
-INSERT INTO `route_access` VALUES (2, '/api/school', b'1', b'0');
+INSERT INTO `route_access` VALUES (1, '/api/institution', b'1', b'0');
+INSERT INTO `route_access` VALUES (2, '/api/institution', b'1', b'0');
+INSERT INTO `route_access` VALUES (1, '/api/institution/groups', b'1', b'0');
+INSERT INTO `route_access` VALUES (2, '/api/institution/classes', b'1', b'0');
+INSERT INTO `route_access` VALUES (1, '/api/institution/groups/:id', b'1', b'0');
+INSERT INTO `route_access` VALUES (2, '/api/institution/classes/:id', b'1', b'0');
 
 INSERT INTO `route_access` VALUES (1, '/api/crossings/events', b'0', b'1');
 INSERT INTO `route_access` VALUES (2, '/api/crossings/events', b'1', b'0');
