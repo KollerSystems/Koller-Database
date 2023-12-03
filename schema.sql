@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `student` (
   `OM` varchar(11) DEFAULT NULL,
   `Name` text DEFAULT NULL,
   `Gender` tinyint(1) unsigned NOT NULL,
-  `Picture` longblob DEFAULT NULL,
+  `Picture` text DEFAULT NULL,
   `GroupID` int(15) unsigned NOT NULL,
   `ClassID` int(15) unsigned NOT NULL,
   `School` text DEFAULT NULL,
