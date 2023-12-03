@@ -64,16 +64,25 @@ CREATE TABLE IF NOT EXISTS `route_access` (
 CREATE TABLE IF NOT EXISTS `class` (
   `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
   `Class` varchar(4) DEFAULT NULL,
+  `Old` bit(1) NOT NULL DEFAULT b'0',
+  PRIMARY KEY(`ID`)
+) DEFAULT COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `group` (
+  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+  `Group` varchar(4) DEFAULT NULL,
+  `Old` bit(1) NOT NULL DEFAULT b'0',
   `HeadTUID` int(15) unsigned NOT NULL,
   PRIMARY KEY(`ID`),
-  KEY `Class` (`Class`)
+  FOREIGN KEY (`HeadTUID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `dorm_room` (
   `RID` smallint(5) unsigned NOT NULL,
   `Gender` tinyint(1) unsigned DEFAULT NULL,
-  `Group` varchar(4) DEFAULT NULL,
-  PRIMARY KEY (`RID`)
+  `GroupID` integer(15) unsigned NOT NULL,
+  PRIMARY KEY (`RID`),
+  FOREIGN KEY (`GroupID`) REFERENCES `group`(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `resident` (
@@ -119,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `student` (
   `Name` text DEFAULT NULL,
   `Gender` tinyint(1) unsigned NOT NULL,
   `Picture` longblob DEFAULT NULL,
-  `Group` varchar(4) DEFAULT NULL,
+  `GroupID` int(15) unsigned NOT NULL,
   `ClassID` int(15) unsigned NOT NULL,
   `School` text DEFAULT NULL,
   `Birthplace` text DEFAULT NULL,
@@ -137,6 +146,7 @@ CREATE TABLE IF NOT EXISTS `student` (
   `ContactID` int(15) unsigned,
   PRIMARY KEY (`UID`) USING BTREE,
   FOREIGN KEY (`UID`) REFERENCES user(`UID`),
+  FOREIGN KEY (`GroupID`) REFERENCES `group`(`ID`),
   FOREIGN KEY (`ClassID`) REFERENCES class(`ID`),
   FOREIGN KEY (`ContactID`) REFERENCES contacts(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
