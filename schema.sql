@@ -164,6 +164,7 @@ CREATE TABLE IF NOT EXISTS `teacher` (
   `UID` int(15) unsigned NOT NULL,
   `Name` text DEFAULT NULL,
   `OM` varchar(11) NOT NULL DEFAULT '0',
+  `sex` tinytext DEFAULT NULL,
   PRIMARY KEY (`UID`) USING BTREE,
   FOREIGN KEY (`UID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
