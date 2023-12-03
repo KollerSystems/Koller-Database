@@ -19,6 +19,13 @@ CREATE TABLE IF NOT EXISTS `auth` (
   FOREIGN KEY (`UID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
+CREATE TABLE IF NOT EXISTS `errors` (
+  `Keyword` varchar(25) NOT NULL,
+  `Code` smallint,
+  `Description` text DEFAULT NULL,
+  PRIMARY KEY (`Keyword`)
+);
+
 CREATE TABLE IF NOT EXISTS `crossings` (
   `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
   `UID` int(15) unsigned NOT NULL,
@@ -127,7 +134,7 @@ CREATE TABLE IF NOT EXISTS `student` (
   `OM` varchar(11) DEFAULT NULL,
   `Name` text DEFAULT NULL,
   `Gender` tinyint(1) unsigned NOT NULL,
-  `Picture` longblob DEFAULT NULL,
+  `Picture` text DEFAULT NULL,
   `GroupID` int(15) unsigned NOT NULL,
   `ClassID` int(15) unsigned NOT NULL,
   `School` text DEFAULT NULL,
