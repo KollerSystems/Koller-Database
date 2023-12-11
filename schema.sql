@@ -181,34 +181,50 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
-CREATE TABLE IF NOT EXISTS `mandatory_program_types` (
-  `TypeID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `program_types` (
+  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+  `Type` tinyint unsigned NOT NULL,
   `Topic` text NOT NULL,
   `RID` smallint(5) unsigned NOT NULL,
   `TUID` int(15) unsigned NOT NULL,
-  PRIMARY KEY (`TypeID`),
+  PRIMARY KEY (`ID`),
   FOREIGN KEY (`TUID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
-CREATE TABLE IF NOT EXISTS `mandatory_programs` (
+CREATE TABLE IF NOT EXISTS `program_time` (
   `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
-  `TypeID` int(15) unsigned NOT NULL,
   `Date` DATE NOT NULL,
-  `ClassID` int(15) unsigned NOT NULL,
   `Lesson` tinyint unsigned NOT NULL,
   `Length` tinyint unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY Class (`TypeID`, `Date`, `ClassID`, `Lesson`),
-  FOREIGN KEY (`ClassID`) REFERENCES class(`ID`)
+  PRIMARY KEY (`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
-CREATE TABLE IF NOT EXISTS `attendees` (
+CREATE TABLE IF NOT EXISTS `mandatory_program` (
+  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+  `TimeID` int(15) unsigned NOT NULL,
+  `ProgramID` int(15) unsigned NOT NULL,
+  `ClassID` int(15) unsigned NOT NULL,
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`TimeID`) REFERENCES program_time(`ID`),
+  FOREIGN KEY (`ProgramID`) REFERENCES program_time(`ID`)
+) DEFAULT COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `study_group_program` (
+  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+  `TimeID` int(15) unsigned NOT NULL,
+  `ProgramID` int(15) unsigned NOT NULL,
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`TimeID`) REFERENCES program_time(`ID`),
+  FOREIGN KEY (`ProgramID`) REFERENCES program_time(`ID`)
+) DEFAULT COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `study_group_attendees` (
   `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
   `UID` int(15) unsigned NOT NULL,
-  `ProgramID` int(15) NOT NULL,
-  `Type` tinyint(1) NOT NULL,
+  `GroupID` int(15) unsigned NOT NULL,
   PRIMARY KEY (`ID`),
-  FOREIGN KEY (`UID`) REFERENCES user(`UID`)
+  FOREIGN KEY (`UID`) REFERENCES user(`UID`),
+  FOREIGN KEY (`GroupID`) REFERENCES program_types(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 
