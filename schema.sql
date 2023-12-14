@@ -191,31 +191,27 @@ CREATE TABLE IF NOT EXISTS `program_types` (
   FOREIGN KEY (`TUID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
-CREATE TABLE IF NOT EXISTS `program_time` (
+CREATE TABLE IF NOT EXISTS `program` (
   `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+  `ProgramID` int(15) unsigned NOT NULL,
   `Date` DATE NOT NULL,
   `Lesson` tinyint unsigned NOT NULL,
   `Length` tinyint unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`ProgramID`) REFERENCES program_types(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `mandatory_program` (
-  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
-  `TimeID` int(15) unsigned NOT NULL,
-  `ProgramID` int(15) unsigned NOT NULL,
+  `ID` int(15) unsigned NOT NULL,
   `ClassID` int(15) unsigned NOT NULL,
   PRIMARY KEY (`ID`),
-  FOREIGN KEY (`TimeID`) REFERENCES program_time(`ID`),
-  FOREIGN KEY (`ProgramID`) REFERENCES program_time(`ID`)
+  FOREIGN KEY (`ID`) REFERENCES program(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `study_group_program` (
-  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
-  `TimeID` int(15) unsigned NOT NULL,
-  `ProgramID` int(15) unsigned NOT NULL,
+  `ID` int(15) unsigned NOT NULL,
   PRIMARY KEY (`ID`),
-  FOREIGN KEY (`TimeID`) REFERENCES program_time(`ID`),
-  FOREIGN KEY (`ProgramID`) REFERENCES program_time(`ID`)
+  FOREIGN KEY (`ID`) REFERENCES program(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `study_group_attendees` (

@@ -80,21 +80,21 @@ INSERT INTO `program_types` VALUES
   (2, 1, 'Asztrofizika', 23, 5),
   (3, 2, 'Falfestés', 18, 5);
 
-INSERT INTO `program_time` VALUES
-  (1, CURDATE(), 0, 1),
-  (2, CURDATE(), 2, 2),
-  (3, CURDATE(), 4, 1),
-  (4, ADDDATE(CURDATE(), 1), 0, 2),
-  (5, CURDATE(), 0, 1);
+INSERT INTO `program` VALUES
+  (1, 1, CURDATE(), 0, 1),
+  (2, 1, CURDATE(), 2, 2),
+  (3, 2, CURDATE(), 4, 1),
+  (4, 2, ADDDATE(CURDATE(), 1), 0, 2),
+  (5, 3, CURDATE(), 0, 1);
 
 INSERT INTO `mandatory_program` VALUES
-  (1, 1, 1, 1),
-  (2, 2, 1, 2),
-  (3, 3, 2, 1),
-  (4, 4, 2, 1);
+  (1, 1),
+  (2, 2),
+  (3, 1),
+  (4, 1);
 
 INSERT INTO `study_group_program` VALUES
-  (1, 5, 3);
+  (5);
 
 INSERT INTO `study_group_attendees` VALUES 
   (1, 1, 3),
@@ -144,19 +144,16 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program_types', 'RID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program_types', 'TUID', b'1');
 
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program_time', 'ID', b'1');
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program_time', 'Date', b'1');
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program_time', 'Lesson', b'1');
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program_time', 'Length', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program', 'ID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program', 'ProgramID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program', 'Date', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program', 'Lesson', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program', 'Length', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'mandatory_program', 'ID', b'1');
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'mandatory_program', 'TimeID', b'1');
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'mandatory_program', 'ProgramID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'mandatory_program', 'ClassID', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'study_group_program', 'ID', b'1');
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'study_group_program', 'TimeID', b'1');
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'study_group_program', 'ProgramID', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'study_group_attendees', 'ID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'study_group_attendees', 'UID', b'1');
