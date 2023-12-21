@@ -181,6 +181,51 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
+CREATE TABLE IF NOT EXISTS `day_type_names` (
+  `ID` int(15) unsigned NOT NULL,
+  `Name` varchar(255) NOT NULL,
+  PRIMARY KEY (`ID`)
+) DEFAULT COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `lessons` (
+  `VersionID` int(15) unsigned,
+  `LessonNum` tinyint(1),
+  `StartTime` time,
+  `EndTime` time,
+  KEY (`VersionID`, `LessonNum`)
+);
+
+CREATE TABLE IF NOT EXISTS `day_type` (
+  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+  `TypeID` int(15) unsigned NOT NULL,
+  `DayStart` time,
+  `RoomRating` time,
+  `MiddayAttendance` time,
+  `DayArrival` time,
+  `LessonsVersion` int(15) unsigned,
+  `NightArrivalRed` time,
+  `NightArrivalYellow` time,
+  `NightEnd` time,
+  `EveningAttendance` time,
+  `BreakfastStart` time,
+  `BreakfastEnd` time,
+  `DinnerStart` time,
+  `DinnerEnd` time,
+  `SupperStart` time,
+  `SupperEnd` time,
+  `ActiveOn` timestamp DEFAULT current_timestamp(),
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`TypeID`) REFERENCES day_type_names(`ID`),
+  FOREIGN KEY (`LessonsVersion`) REFERENCES lessons(`VersionID`)
+) DEFAULT COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `Date` (
+  `Date` DATE NOT NULL,
+  `DayTypeID` int(15) unsigned NOT NULL,
+  PRIMARY KEY (`Date`),
+  FOREIGN KEY (`DayTypeID`) REFERENCES day_type(`ID`)
+) DEFAULT COLLATE=utf8_bin;
+
 CREATE TABLE IF NOT EXISTS `program_types` (
   `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
   `Type` tinyint unsigned NOT NULL,
@@ -198,7 +243,8 @@ CREATE TABLE IF NOT EXISTS `program` (
   `Lesson` tinyint unsigned NOT NULL,
   `Length` tinyint unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`ID`),
-  FOREIGN KEY (`ProgramID`) REFERENCES program_types(`ID`)
+  FOREIGN KEY (`ProgramID`) REFERENCES program_types(`ID`),
+  FOREIGN KEY (`Date`) REFERENCES Date(`Date`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `mandatory_program` (
