@@ -102,7 +102,7 @@ INSERT INTO `day_type` VALUES
   (2, 2, '6:00:00', '8:00:00', '12:00:00', '15:45:00', 2, '20:15:00', '21:00:00', '22:00:00', '22:30:00', '6:00:00', '8:00:00', '13:00:00', '15:45:00', '18:00:00', '20:00:00', CURDATE()),
   (3, 1, '8:00:00', '8:00:00', '12:00:00', '15:45:00', 1, '20:15:00', '21:00:00', '22:00:00', '22:30:00', '6:00:00', '8:00:00', '13:00:00', '15:45:00', '18:00:00', '20:00:00', ADDDATE(CURDATE(), 3));
 
-INSERT INTO `Date` VALUES
+INSERT INTO `date` VALUES
   (CURDATE(), 2),
   (ADDDATE(CURDATE(), 1), 1);
 
@@ -176,6 +176,36 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program', 'Lesson', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'program', 'Length', b'1');
 
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'date', 'DateID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'date', 'DayTypeID', b'1');
+
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'lessons', 'VersionID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'lessons', 'LessonNum', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'lessons', 'StartTime', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'lessons', 'EndTime', b'1');
+
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'ID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'TypeID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'DayStart', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'RoomRating', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'MiddayAttendance', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'DayArrival', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'LessonsVersion', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'NightArrivalRed', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'NightArrivalYellow', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'NightEnd', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'EveningAttendance', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'BreakfastStart', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'BreakfastEnd', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'DinnerStart', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'DinnerEnd', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'SupperStart', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'SupperEnd', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type', 'ActiveOn', b'1');
+
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type_names', 'ID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'day_type_names', 'DayName', b'1');
+
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'mandatory_program', 'ID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'mandatory_program', 'ClassID', b'1');
 
@@ -231,6 +261,36 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'dorm_ro
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'resident', 'UID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'resident', 'RID', b'0');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'resident', 'BedNum', b'1');
+
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'date', 'DateID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'date', 'DayTypeID', b'1');
+
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'lessons', 'VersionID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'lessons', 'LessonNum', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'lessons', 'StartTime', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'lessons', 'EndTime', b'1');
+
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'ID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'TypeID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'DayStart', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'RoomRating', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'MiddayAttendance', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'DayArrival', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'LessonsVersion', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'NightArrivalRed', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'NightArrivalYellow', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'NightEnd', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'EveningAttendance', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'BreakfastStart', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'BreakfastEnd', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'DinnerStart', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'DinnerEnd', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'SupperStart', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'SupperEnd', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type', 'ActiveOn', b'1');
+
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type_names', 'ID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'day_type_names', 'DayName', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'class', 'ID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'class', 'Class', b'1');

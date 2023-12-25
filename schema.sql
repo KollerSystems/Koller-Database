@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 CREATE TABLE IF NOT EXISTS `day_type_names` (
   `ID` int(15) unsigned NOT NULL,
-  `Name` varchar(255) NOT NULL,
+  `DayName` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
@@ -219,10 +219,10 @@ CREATE TABLE IF NOT EXISTS `day_type` (
   FOREIGN KEY (`LessonsVersion`) REFERENCES lessons(`VersionID`)
 ) DEFAULT COLLATE=utf8_bin;
 
-CREATE TABLE IF NOT EXISTS `Date` (
-  `Date` DATE NOT NULL,
+CREATE TABLE IF NOT EXISTS `date` (
+  `DateID` DATE NOT NULL,
   `DayTypeID` int(15) unsigned NOT NULL,
-  PRIMARY KEY (`Date`),
+  PRIMARY KEY (`DateID`),
   FOREIGN KEY (`DayTypeID`) REFERENCES day_type(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS `program` (
   `Length` tinyint unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`ID`),
   FOREIGN KEY (`ProgramID`) REFERENCES program_types(`ID`),
-  FOREIGN KEY (`Date`) REFERENCES Date(`Date`)
+  FOREIGN KEY (`Date`) REFERENCES date(`DateID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `mandatory_program` (
