@@ -1,0 +1,3 @@
+*.sql linguist-detectable
+*.sh linguist-detectable
+*.md linguist-detectable
