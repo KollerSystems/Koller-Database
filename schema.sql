@@ -86,10 +86,18 @@ CREATE TABLE IF NOT EXISTS `group` (
 
 CREATE TABLE IF NOT EXISTS `dorm_room` (
   `RID` smallint(5) unsigned NOT NULL,
-  `Gender` tinyint(1) unsigned DEFAULT NULL,
+  `Annexe` tinyint(1) unsigned DEFAULT NULL,
+  `Floor` tinyint(2) unsigned DEFAULT NULL,
   `GroupID` integer(15) unsigned NOT NULL,
   PRIMARY KEY (`RID`),
   FOREIGN KEY (`GroupID`) REFERENCES `group`(`ID`)
+  FOREIGN KEY (`Annexe`) REFERENCES `annexes`(`AID`)
+) DEFAULT COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `annexes` (
+  `AID` smallint(2) unsigned NOT NULL,
+  `Annexe` varchar(64) unsigned DEFAULT NULL,
+  PRIMARY KEY (`AID`),
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `resident` (
