@@ -41,10 +41,14 @@ INSERT INTO `group` (`ID`, `Group`, `HeadTUID`) VALUES
   (2, 'F3', 5),
   (3, 'F8', 5);
 
+INSERT INTO `annexe` VALUES
+  (1, 'A Épület', 1),
+  (2, 'B Épület', 2);
+
 INSERT INTO `dorm_room` VALUES
   (172, 1, 3),
   (131, 1, 1),
-  (17, 0, 2);
+  (17, 2, 2);
 
 INSERT INTO `login_data` (`UID`, `Username`, `Password`) VALUES
   (1, 'Miki', 'almafa1234'),
@@ -54,7 +58,7 @@ INSERT INTO `login_data` (`UID`, `Username`, `Password`) VALUES
   (5, 'DJ', 'almafa1234'),
   (6, 'Lizz', 'almafa1234');
 
-INSERT INTO `teacher` VALUES (5, 'Dobos József', '72237485955');
+INSERT INTO `teacher` VALUES (5, 'Dobos József', '72237485955', b'1');
 
 INSERT INTO `contacts` VALUES
   (7773, 'TheBigVMT', 'Várnagy Miklós Tamás', '@Josh', 'xdxd1243@gmail.com');
@@ -157,8 +161,12 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'mifare_
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'mifare_tags', 'Bytes', b'0');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'dorm_room', 'RID', b'1');
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'dorm_room', 'Gender', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'dorm_room', 'AID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'dorm_room', 'GroupID', b'1');
+
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'annexe', 'AID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'annexe', 'Annexe', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'annexe', 'Gender', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'resident', 'UID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'resident', 'RID', b'0');
@@ -255,8 +263,12 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'mifare_
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'mifare_tags', 'Bytes', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'dorm_room', 'RID', b'1');
-INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'dorm_room', 'Gender', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'dorm_room', 'AID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'dorm_room', 'GroupID', b'1');
+
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'annexe', 'AID', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'annexe', 'Annexe', b'1');
+INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (1, 'annexe', 'Gender', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'resident', 'UID', b'1');
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'resident', 'RID', b'0');
@@ -303,9 +315,17 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES (2, 'group',
 
 INSERT INTO `route_access` VALUES (1, '/api/institution', b'1', b'0');
 INSERT INTO `route_access` VALUES (2, '/api/institution', b'1', b'0');
+-- INSERT INTO `route_access` VALUES (1, '/api/institution/annexes', b'1', b'0');
+-- INSERT INTO `route_access` VALUES (2, '/api/institution/annexes', b'1', b'0');
+-- INSERT INTO `route_access` VALUES (1, '/api/institution/annexes/:id', b'1', b'0');
+-- INSERT INTO `route_access` VALUES (2, '/api/institution/annexes/:id', b'1', b'0');
 INSERT INTO `route_access` VALUES (1, '/api/institution/groups', b'1', b'0');
+INSERT INTO `route_access` VALUES (2, '/api/institution/groups', b'1', b'0');
+INSERT INTO `route_access` VALUES (1, '/api/institution/classes', b'1', b'0');
 INSERT INTO `route_access` VALUES (2, '/api/institution/classes', b'1', b'0');
 INSERT INTO `route_access` VALUES (1, '/api/institution/groups/:id', b'1', b'0');
+INSERT INTO `route_access` VALUES (2, '/api/institution/groups/:id', b'1', b'0');
+INSERT INTO `route_access` VALUES (1, '/api/institution/classes/:id', b'1', b'0');
 INSERT INTO `route_access` VALUES (2, '/api/institution/classes/:id', b'1', b'0');
 
 INSERT INTO `route_access` VALUES (1, '/api/crossings/events', b'0', b'1');
@@ -321,8 +341,6 @@ INSERT INTO `route_access` VALUES (1, '/api/users/me', b'1', b'0');
 INSERT INTO `route_access` VALUES (2, '/api/users/me', b'1', b'0');
 INSERT INTO `route_access` VALUES (1, '/api/users/:id', b'1', b'0');
 INSERT INTO `route_access` VALUES (2, '/api/users/:id', b'1', b'0');
--- INSERT INTO `route_access` VALUES (1, '/api/users/:id/dorm_room', b'1', b'0');
--- INSERT INTO `route_access` VALUES (2, '/api/users/:id/dorm_room', b'1', b'0');
 INSERT INTO `route_access` VALUES (2, '/api/users/:id', b'1', b'0');
 INSERT INTO `route_access` VALUES (1, '/api/users/mifare', b'0', b'0');
 INSERT INTO `route_access` VALUES (2, '/api/users/mifare', b'1', b'0');
