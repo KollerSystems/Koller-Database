@@ -90,15 +90,15 @@ CREATE TABLE IF NOT EXISTS `dorm_room` (
   -- `Floor` tinyint(2) unsigned DEFAULT NULL,
   `GroupID` integer(15) unsigned NOT NULL,
   PRIMARY KEY (`RID`),
-  FOREIGN KEY (`AID`) REFERENCES `annexe`(`AID`),
+  FOREIGN KEY (`AID`) REFERENCES `annexe`(`ID`),
   FOREIGN KEY (`GroupID`) REFERENCES `group`(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `annexe` (
-  `AID` smallint(2) unsigned NOT NULL AUTO_INCREMENT,
+  `ID` smallint(2) unsigned NOT NULL AUTO_INCREMENT,
   `Annexe` varchar(64) DEFAULT NULL,
   `Gender` tinyint(1) unsigned DEFAULT NULL,
-  PRIMARY KEY (`AID`)
+  PRIMARY KEY (`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `resident` (
