@@ -87,7 +87,8 @@ CREATE TABLE IF NOT EXISTS `group` (
 CREATE TABLE IF NOT EXISTS `dorm_room` (
   `RID` smallint(5) unsigned NOT NULL,
   `AID` smallint(2) unsigned NOT NULL,
-  -- `Floor` tinyint(2) unsigned DEFAULT NULL,
+  `Floor` tinyint(2) unsigned DEFAULT NULL,
+  `FRID` smallint(2) unsigned NOT NULL,
   `GroupID` integer(15) unsigned NOT NULL,
   PRIMARY KEY (`RID`),
   FOREIGN KEY (`AID`) REFERENCES `annexe`(`ID`),
@@ -97,7 +98,6 @@ CREATE TABLE IF NOT EXISTS `dorm_room` (
 CREATE TABLE IF NOT EXISTS `annexe` (
   `ID` smallint(2) unsigned NOT NULL AUTO_INCREMENT,
   `Annexe` varchar(64) DEFAULT NULL,
-  `Gender` tinyint(1) unsigned DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
@@ -140,10 +140,6 @@ CREATE TABLE IF NOT EXISTS `room_order` (
 
 CREATE TABLE IF NOT EXISTS `student` (
   `UID` int(15) unsigned NOT NULL,
-  `OM` varchar(11) DEFAULT NULL,
-  `Name` text DEFAULT NULL,
-  `Gender` tinyint(1) unsigned NOT NULL,
-  `Picture` text DEFAULT NULL,
   `GroupID` int(15) unsigned NOT NULL,
   `ClassID` int(15) unsigned NOT NULL,
   `School` text DEFAULT NULL,
@@ -178,16 +174,26 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 
 CREATE TABLE IF NOT EXISTS `teacher` (
   `UID` int(15) unsigned NOT NULL,
-  `Name` text DEFAULT NULL,
-  `OM` varchar(11) NOT NULL DEFAULT '0',
-  `Gender` tinyint(1) unsigned DEFAULT NULL,
+  `PID` int(2) unsigned NOT NULL,
   PRIMARY KEY (`UID`) USING BTREE,
   FOREIGN KEY (`UID`) REFERENCES user(`UID`)
+  FOREIGN KEY (`PID`) REFERENCES professions(`PID`)
+) DEFAULT COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `professions` (
+  `PID` int(15) unsigned NOT NULL,
+  `Name` tinytext NOT NULL,
+  `Description` text DEFAULT NULL,
+  PRIMARY KEY (`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `user` (
   `UID` int(15) unsigned NOT NULL AUTO_INCREMENT,
   `Role` tinyint(1) unsigned DEFAULT 0,
+  `Name` text DEFAULT NULL,
+  `OM` varchar(11) DEFAULT NULL,
+  `Picture` text DEFAULT NULL,
+  `Gender` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
