@@ -88,7 +88,6 @@ CREATE TABLE IF NOT EXISTS `dorm_room` (
   `RID` smallint(5) unsigned NOT NULL,
   `AID` smallint(2) unsigned NOT NULL,
   `Floor` tinyint(2) unsigned DEFAULT NULL,
-  `FRID` smallint(2) unsigned NOT NULL,
   `GroupID` integer(15) unsigned NOT NULL,
   PRIMARY KEY (`RID`),
   FOREIGN KEY (`AID`) REFERENCES `annexe`(`ID`),
@@ -172,19 +171,11 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   PRIMARY KEY (`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
-CREATE TABLE IF NOT EXISTS `teacher` (
-  `UID` int(15) unsigned NOT NULL,
-  `PID` int(2) unsigned NOT NULL,
-  PRIMARY KEY (`UID`) USING BTREE,
-  FOREIGN KEY (`UID`) REFERENCES user(`UID`)
-  FOREIGN KEY (`PID`) REFERENCES professions(`PID`)
-) DEFAULT COLLATE=utf8_bin;
-
 CREATE TABLE IF NOT EXISTS `professions` (
   `PID` int(15) unsigned NOT NULL,
   `Name` tinytext NOT NULL,
   `Description` text DEFAULT NULL,
-  PRIMARY KEY (`UID`)
+  PRIMARY KEY (`PID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `user` (
@@ -195,6 +186,14 @@ CREATE TABLE IF NOT EXISTS `user` (
   `Picture` text DEFAULT NULL,
   `Gender` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`UID`)
+) DEFAULT COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `teacher` (
+  `UID` int(15) unsigned NOT NULL,
+  `PID` int(15) unsigned NOT NULL,
+  PRIMARY KEY (`UID`) USING BTREE,
+  FOREIGN KEY (`UID`) REFERENCES user(`UID`),
+  FOREIGN KEY (`PID`) REFERENCES professions(`PID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `day_type_names` (
