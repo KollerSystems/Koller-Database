@@ -17,7 +17,8 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
   (1, 'user', 'UID', b'1'),
   (1, 'user', 'Name', b'1'),
   (1, 'user', 'Gender', b'1'),
-  (1, 'user', 'Picture', b'1');
+  (1, 'user', 'Picture', b'1'),
+  (1, 'user', 'Role', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
   (1, 'student', 'UID', b'1'),
@@ -62,8 +63,7 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
   (1, 'annexe', 'ID', b'1'),
-  (1, 'annexe', 'Annexe', b'1'),
-  (1, 'annexe', 'Gender', b'1');
+  (1, 'annexe', 'Annexe', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
   (1, 'resident', 'UID', b'1'),
@@ -145,7 +145,8 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
   (2, 'user', 'UID', b'1'),
   (2, 'user', 'Name', b'1'),
   (2, 'user', 'Gender', b'1'),
-  (2, 'user', 'Picture', b'1');
+  (2, 'user', 'Picture', b'1'),
+  (2, 'user', 'Role', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
   (2, 'student', 'UID', b'1'),
@@ -189,8 +190,7 @@ INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
   (2, 'annexe', 'ID', b'1'),
-  (2, 'annexe', 'Annexe', b'1'),
-  (2, 'annexe', 'Gender', b'1');
+  (2, 'annexe', 'Annexe', b'1');
 
 INSERT INTO `permissions` (`Role`, `Table`, `Field`, `Read`) VALUES
   (2, 'resident', 'UID', b'1'),
