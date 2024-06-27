@@ -1,275 +1,411 @@
-# TODO: kevesbe osszecsapott es kesobb is hasznalhatova tetel + jobban parametizalas
+# TODO: dokumentáció
+# TODO: multithreading
+# TODO: optimalizáció -> for loopban fetchone helyett fetchmany és azokat használni míg "el nem fogy" a kapott lista
 
+import mariadb
+import sys
+from random import randrange, randint, randbytes
 from json import loads
-from random import randint as rand
-
-data = None
-with open('data.json') as f:
-  data = loads(''.join(f.readlines()))['data']
-
-dummy = {
-  'user': [],
-  'class': [],
-  'group': [],
-  'annexe': [],
-  'dorm_room': [],
-  'resident' : [],
-  'login_data': [],
-  'teacher': [],
-  'contacts': [],
-  'student': [],
-  'program_types': [],
-  'day_type': [],
-  'date': [],
-  'program': [],
-  'study_group_program': [],
-  'study_group_attendees': [],
-  'mandatory_program': []
-}
-LEN = len(data)
-TEACHERCOUNT = 50
-
-studentIDs = list(range(1, LEN+1))
-teacherIDs = []
-for _ in range(TEACHERCOUNT):
-  rnd = rand(0, LEN-len(teacherIDs))
-  teacherIDs.append(studentIDs.pop(rnd)) # IndexError: pop index out of range
+from math import ceil
+from datetime import date, timedelta, time as timeclass
+from time import time
 
 
-for i in range(1, LEN+1):
-  dummy['user'].append({})
-  dummy['user'][-1]['UID'] = i
-  dummy['user'][-1]['Role'] = 2 if (i in teacherIDs) else 1
+### CONFIG ###
+# PARAMETERS
+
+listed = []
+isBlackList = True
+
+# PARAMETERS
+# GLOBAL CONSTANTS
+
+USER_COUNT = 1000
+TEACHER_COUNT = 50
+
+PROFESSIONS_COUNT = 4
+
+ROOM_COUNT = int((USER_COUNT - TEACHER_COUNT) / 4) + 100
+GROUP_COUNT = int(ROOM_COUNT // 2 + 1)
+
+BED_COUNT = 4
+
+DATE_START_OFFSET = -25
+DATE_PIVOT = [date.today().year, date.today().month, date.today().day] # [év, hónap, nap]
+DATE_END_OFFSET = 200
+
+CROSSINGS_PER_DAY_COUNT = 100
+
+PROGRAM_TYPES_COUNT = 100
+MANDATORY_PROGRAM_COUNT = 40
+MAX_RID = 2**16 # smallint
+
+PROGRAM_COUNT = (abs(DATE_START_OFFSET) + abs(DATE_END_OFFSET)) * 4 * 25 + 40
+
+# GLOBAL CONSTANTS
+### CONFIG ###
 
 
-classes = []
-for n in range(9,13):
-  for l in ['A', 'B', 'C', 'E']:
-    classes.append(str(n) + '.' + l)
-    dummy['class'].append({})
-    dummy['class'][-1]['ID'] = len(dummy['class'])
-    dummy['class'][-1]['Class'] = classes[-1]
+try:
+  conn = mariadb.connect(
+    user="root",
+    password="",
+    host="127.0.0.1",
+    port=3306,
+    database="kollegium"
+  )
+except mariadb.Error as e:
+  print(f"Error connecting to MariaDB Platform: {e}")
+  sys.exit(1)
+
+cur = conn.cursor()
+insertionCur = conn.cursor()
 
 
-GROUPCOUNT = 50
-groups = []
-groupIDs = range(1, GROUPCOUNT+1)
-for n in range(0, GROUPCOUNT):
-  pref = 'L' if n+1 > GROUPCOUNT//2 else 'F'
-  group = pref + str(n%(GROUPCOUNT//2)+1)
-  groups.append(group)
-  dummy['group'].append({})
-  dummy['group'][-1]['ID'] = n + 1
-  dummy['group'][-1]['Group'] = group
-  dummy['group'][-1]['HeadTUID'] = teacherIDs[n % TEACHERCOUNT]
+datajson = {}
+with open("./data.json", "r") as f:
+  datajson = loads("".join(f.readlines()))
+  datajson = datajson["data"]
+def randomValue(key):
+  randomIndex = randrange(0, len(datajson))
+  return datajson[randomIndex][key]
+
+def bstb(bitstring):
+  return bitstring == b'\x01'
+
+def itShouldAdd(name):
+  verdict = name in listed
+  return (not verdict if isBlackList else verdict)
 
 
-ANNEXCOUNT = 4
-annexIDs = range(1, ANNEXCOUNT+1)
-for n in range(ANNEXCOUNT):
-  dummy['annexe'].append({})
-  dummy['annexe'][-1]['ID'] = n+1
-  dummy['annexe'][-1]['Annexe'] = [chr(b) for b in range(65, 91)][n] + ' Épület'
+TESTCOUNT = 18
+curTestNum = -1
+def progress():
+  global curTestNum
+  curTestNum += 1
+  print(chr(8) * 10, end="")
+  print(("(%i/%i)" % (TESTCOUNT, curTestNum)).ljust(8, " "), end="| ")
+progress()
+def logger():
+  now = time()
+  progress()
+  def log(name: str):
+    took = time() - now
+    print(name.ljust(30, " ") + "| ~%i ms" % round(took * 1000))
+  return log
 
 
-ROOMCOUNT = 250
-for n in range(ROOMCOUNT):
-  d = {}
-  d['RID'] = n+1
-  d['AID'] = n % ANNEXCOUNT + 1
-  d['GroupID'] = n % GROUPCOUNT + 1
-  dummy['dorm_room'].append(d)
+class dbfunction:
+  def __init__(self, value):
+    self.value = str(value)
+  def __str__(self):
+    return self.value
+  def __repr__(self):
+    return self.value
 
+def insert(table, *args):
+  if not itShouldAdd(table):
+    return
 
-c = 0
-for studentID in studentIDs:
-  d = {}
-  d['UID'] = studentID
-  d['RID'] = c % ROOMCOUNT + 1
-  d['BedNum'] = c//ROOMCOUNT + 1
-  dummy['resident'].append(d)
-  c += 1
-
-
-for i in range(LEN):
-  d = {}
-  d['UID'] = i+1
-  d['Username'] = data[i]['username']
-  d['Password'] = data[i]['password']
-  dummy['login_data'].append(d)
-
-
-for teacherID in teacherIDs:
-  d = {}
-  d['UID'] = teacherID
-  d['Name'] = data[teacherID-1]['name']
-  d['OM'] = str(rand(70000000000, 80000000000-1))
-  dummy['teacher'].append(d)
-
-
-for i in range(LEN):
-  if i not in studentIDs:
-    continue
-  d = {}
-  d['ID'] = i+1
-  for k in ['Discord', 'Email', 'Instagram']:
-    d[k] = data[i][k.lower()]
-  dummy['contacts'].append(d)
-
-c = 0
-for i in range(LEN):
-  if i not in studentIDs:
-    continue
-  d = {}
-  d['UID'] = i
-  d['OM'] = str(rand(70000000000, 80000000000-1))
-  d['RID'] = c % ROOMCOUNT + 1
-  d['GroupID'] = (c % ROOMCOUNT + 1) % GROUPCOUNT + 1
-  d['ContactID'] = i+1
-  d['ClassID'] = c % len(classes) + 1
-  d['Gender'] = 'b\'0\'' if d['GroupID'] > GROUPCOUNT//2 else 'b\'1\''
-  for k in ['Name', 'Picture', 'School', 'Birthplace', 'Birthdate', 'GuardianName', 'GuardianPhone', 'Country', 'City', 'Street', 'PostCode', 'Address']:
-    d[k] = data[i][k.lower()]
-  c += 1
-  dummy['student'].append(d)
-
-
-TOPICSCOUNT = 100
-MANDATORYCOUNT = 60
-topics = [ data[rnd]['topic'] for rnd in [ rand(0, LEN-1) for _ in range(TOPICSCOUNT) ] ]
-for n in range(TOPICSCOUNT):
-  d = {}
-  d['ID'] = n+1
-  d['Type'] = 2 if n > 60 else 1
-  d['Topic'] = topics[n]
-  d['RID'] = n % ROOMCOUNT
-  d['TUID'] = teacherIDs[n % TEACHERCOUNT]
-  dummy['program_types'].append(d)
-
-
-multipleDayTypes = {
-  'ID': [1,2,3,4],
-  'TypeID': [1,2,3,4],
-  'DayStart': ['8:00:00', '6:00:00', '6:00:00', '8:00:00'],
-  'RoomRating': ['8:00:00', '8:00:00', '8:00:00', '8:00:00'],
-  'MiddayAttendance': ['12:00:00', '12:00:00', '12:00:00', '12:00:00'],
-  'DayArrival': ['15:45:00', '15:45:00', '15:45:00', '15:45:00'],
-  'LessonsVersion': [1,1,1,1],
-  'NightArrivalRed': ['20:15:00', '20:15:00', '20:15:00', '20:15:00'],
-  'NightArrivalYellow': ['21:00:00', '21:00:00', '21:00:00', '21:00:00'],
-  'NightEnd': ['22:00:00', '22:00:00', '22:00:00', '22:00:00'],
-  'EveningAttendance': ['22:30:00', '22:30:00', '22:30:00', '22:30:00'],
-  'BreakfastStart': ['6:00:00', '6:00:00', '6:00:00', '6:00:00'],
-  'BreakfastEnd': ['8:00:00', '8:00:00', '8:00:00', '8:00:00'],
-  'DinnerStart': ['13:00:00', '13:00:00', '13:00:00', '13:00:00'],
-  'DinnerEnd': ['15:45:00', '15:45:00', '15:45:00', '15:45:00'],
-  'SupperStart': ['18:00:00', '18:00:00', '18:00:00', '18:00:00'],
-  'SupperEnd': ['20:00:00', '20:00:00', '20:00:00', '20:00:00'],
-  'ActiveOn': ['ADDDATE(CURDATE(), -1)', 'ADDDATE(CURDATE(), -1)', 'ADDDATE(CURDATE(), -1)', 'ADDDATE(CURDATE(), -1)']
-}
-for key in multipleDayTypes:
-  for i in range(len(multipleDayTypes[key])):
-    if len(dummy['day_type']) <= i:
-      dummy['day_type'].append({})
-    dummy['day_type'][i][key] = multipleDayTypes[key][i]
-
-
-DEFINERANDOMNUMPERDAY = 40
-mandatoryProgramTypes = list(filter(lambda v: v['Type'] == 1, dummy['program_types']))
-studygroupProgramTypes = list(filter(lambda v: v['Type'] == 2, dummy['program_types']))
-for n in range(-7, 14+1):
-  for classObj in dummy['class']:
-    for i in range(1,3):
-      programType = mandatoryProgramTypes[rand(0, len(mandatoryProgramTypes)-1)]
-      p = {
-        'ID': len(dummy['program'])+1,
-        'ProgramID': programType['ID'],
-        'Date': 'ADDDATE(CURDATE(), %s)' % n,
-        'Lesson': i,
-        'Length': 1
-      }
-      dummy['program'].append(p)
-      m = {
-        'ID': len(dummy['mandatory_program'])+1,
-        'ClassID': classObj['ID']
-      }
-      dummy['mandatory_program'].append(m)
-
-defined = []
-for studygroup in studygroupProgramTypes:
-  for n in range(-7, 14):
-    p = {
-      'ProgramID': studygroup['ID'],
-      'Date': 'ADDDATE(CURDATE(), %s)' % n,
-      'Lesson': rand(3,4),
-      'Length': rand(1,2)
-    }
-    outside = p not in defined
-    p['ID'] = len(dummy['program'])+1
-    sp = {
-      'ID': p['ID']
-    }
-    if outside:
-      dummy['program'].append(p)
-      dummy['study_group_program'].append(sp)
-
-for studentUID in studentIDs:
-  for n in range(1):
-    sa = {}
-    sa['ID'] = len(dummy['study_group_attendees'])+1
-    sa['UID'] = studentUID
-    sa['GroupID'] = studygroupProgramTypes[rand(0, len(studygroupProgramTypes)-1)]['ID']
-    dummy['study_group_attendees'].append(sa)
-
-
-for n in range(-7, 14+1):
-  d = {}
-  d['DateID'] = 'ADDDATE(CURDATE(), %s)' % n
-  if (n % 7 == 0):
-    d['DayTypeID'] = 1
-  elif (n % 7 == 4):
-    d['DayTypeID'] = 3
-  elif (n % 7 > 4):
-    d['DayTypeID'] = 4
+  fields = []
+  values = []
+  if (len(args) == 1):
+    fields = list(args[0].keys())
+    values = list(args[0].values())
   else:
-    d['DayTypeID'] = 2
-  dummy['date'].append(d)
+    fields = list(args[0])
+    values = list(args[1])
+
+  if len(fields) != len(values):
+    raise("Number of fields is not the same as the number of values!")
+
+  for i in range(len(values)):
+    fields[i] = f"`{fields[i]}`"
+
+    if type(values[i]) == bool:
+      values[i] = f"b'{int(values[i])}'"
+    elif type(values[i]) == str:
+      values[i] = f"\"{values[i]}\""
+    elif type(values[i]) == dbfunction:
+      pass
+    elif values[i] == None:
+      values[i] = "NULL"
+    else:
+      values[i] = str(values[i])
+
+  insertionCur.execute(f"INSERT INTO `{table}` ({','.join(fields)}) VALUES ({','.join(map(str, values))})")
+  conn.commit()
 
 
-print('''INSERT INTO `role_name` (`Role`, `Table`, `FullName`) VALUES
-(1, 'student', 'kollégiumi diák'),
-(2, 'teacher', 'nevelőtanár');''')
 
-print('''INSERT INTO `day_type_names` VALUES
-(1, 'tanulásra készülő nap'),
-(2, 'tanuló nap'),
-(3, 'tanulást befejező nap'),
-(4, 'tanulásmentes nap');''')
+# professions
+l = logger()
+for professionN in range(1, PROFESSIONS_COUNT+1):
+  value = randomValue("topic")
+  insert("professions", ["PID", "Name", "Description"], [professionN, value, f"Egy nagyon menő leírás: {value}, mint mindig!"])
+l("professions")
 
-print('''INSERT INTO `lessons` VALUES
-(1, 1, '16:00:00', '16:45:00'),
-(1, 2, '16:50:00', '16:35:00'),
-(1, 3, '16:40:00', '17:25:00'),
-(1, 4, '17:30:00', '18:15:00');''')
+# class
+l = logger()
+for classNumber in range(9, 13+1):
+  for classLetter in [chr(v).upper() for v in range(ord('a'), ord('j')+1)]:
+    insert("class", ["Class"], [str(classNumber) + "." + classLetter])
+l("class")
+
+# user + login_data
+l = logger()
+for userN in range(1, USER_COUNT+1):
+  # user
+  user = {
+    "UID": userN,
+    "Name": randomValue("name"),
+    "OM": "".join([str(randrange(0, 10) if v != 0 else randrange(1, 10)) for v in range(11)]),
+    "Gender": bool(randrange(0,2)),
+    "Picture": randomValue("picture"),
+    "Role": 2 if userN < TEACHER_COUNT else 1
+  }
+  insert("user", user)
+
+  # login_data
+  insert("login_data", ["UID", "Username", "Password"], [userN, randomValue("username"), ["Asajtfinom1", "porcica1"][randrange(0,2)]])
+l("user, login_data")
+
+# teacher
+l = logger()
+for teacherN in range(1, TEACHER_COUNT+1):
+  insert("teacher", ["UID", "PID"], [teacherN, randrange(1, PROFESSIONS_COUNT+1)])
+l("teacher")
+
+# group
+l = logger()
+for groupN in range(1, GROUP_COUNT+1):
+  cur.execute("SELECT UID FROM teacher ORDER BY RAND() LIMIT 1")
+  group = {
+    "ID": groupN,
+    "Group": ('F' if bool(groupN % 2) else 'L') + str(ceil(groupN / 2)),
+    "Old": False,
+    "HeadTUID": cur.fetchone()[0]
+  }
+  insert("group", group)
+l("group")
+
+# annexe -- static
+l = logger()
+insert("annexe", ["ID", "Annexe"], [1, "Főépület"])
+l("annexe")
+
+# dorm_room
+# numbering system: Floor(1) + Room?(10) -> 110
+l = logger()
+cur.execute("SELECT ID FROM `group`")
+conn.commit()
+for roomN in range(1, ROOM_COUNT+1):
+  identifier = cur.fetchone()
+  if identifier == None:
+    cur.execute("SELECT ID FROM `group`")
+    conn.commit()
+    identifier = cur.fetchone()
+
+  room = {
+    "RID": roomN,
+    "AID": 1,
+    "Floor": roomN // 100,
+    "GroupID": identifier[0]
+  }
+  insert("dorm_room", room)
+l("dorm_room")
+
+# resident + contacts + student
+l = logger()
+contactN = 1
+for studentN in range(50, 1000 + 1):
+  cur.execute(f"SELECT * FROM user WHERE UID = {studentN}")
+  user = cur.fetchone()
+
+  # resident
+  tried = []
+  (rid, groupid) = (0, 0)
+  bedsTaken = []
+  while (len(tried) < ROOM_COUNT):
+    cur.execute(f"SELECT RID, GroupID FROM dorm_room LEFT JOIN `group` ON GroupID=ID WHERE `Group` LIKE \"{'F' if bool(user[5]) else 'L'}%\"{''.join([(' AND RID <> %s' % t) for t in tried ])} ORDER BY RAND() LIMIT 1")
+
+    (rid, groupid) = cur.fetchone()
+    cur.execute(f"SELECT BedNum FROM resident WHERE RID = {rid} ORDER BY BedNum ASC")
+    bedsTaken = cur.fetchall()
+    if len(bedsTaken) < BED_COUNT:
+      break
+    tried.append(rid)
+
+  available = []
+  for n in range(1, BED_COUNT + 1):
+    if (n,) not in bedsTaken:
+      available.append(n)
+
+  resident = {
+    "UID": user[0],
+    "RID": rid,
+    "BedNum": available[randrange(0, len(available))]
+  }
+  insert("resident", resident)
+
+  # contacts
+  contacts = {
+    "ID": contactN,
+    "Discord": randomValue("discord"),
+    "Facebook": user[2],
+    "Instagram": randomValue("instagram"),
+    "Email": randomValue("email")
+  }
+  insert("contacts", contacts)
+
+  # student
+  cur.execute("SELECT ID FROM class ORDER BY RAND()")
+  student = {
+    "UID": studentN,
+    "GroupID": groupid,
+    "RID": rid,
+    "ContactID": contactN,
+    "ClassID": cur.fetchone()[0]
+  }
+  for field in ["School", "Birthplace", "Birthdate", "GuardianName", "GuardianPhone", "Country", "City", "Street", "PostCode", "Address"]:
+    student[field] = randomValue(field.lower())
+  insert("student", student)
+
+  contactN += 1
+l("resident, contacts, student")
+
+# crossings
+# TODO: efficient query egyszerre lekérni: UID & legutolsó direction(vagy NULL)
+l = logger()
+for offset in range(DATE_START_OFFSET, DATE_END_OFFSET + 1):
+  for dailyN in range(1, CROSSINGS_PER_DAY_COUNT + 1):
+    cur.execute("SELECT UID FROM user ORDER BY RAND() LIMIT 1")
+    crossing = {
+      "UID": cur.fetchone()[0],
+      "Time": dbfunction(f"ADDDATE(\'{'-'.join(map(str, DATE_PIVOT))}\', {str(offset)})"),
+    }
+    cur.execute(f"SELECT Direction FROM crossings WHERE UID={crossing['UID']} ORDER BY Time DESC LIMIT 1")
+    direction = cur.fetchone()
+    if direction != None:
+      crossing["Direction"] = not bstb(direction[0])
+    else:
+      crossing["Direction"] = False
+    insert("crossings", crossing)
+l("crossings")
+
+# TODO: mifare_tags
+# cur.execute("SELECT UID FROM user")
+# for (uid,) in cur:
+#   insert("mifare_tags", ["UID", "Issued", "Bytes"], [uid, dbfunction(f"ADDDATE(\'{'-'.join(map(str, DATE_PIVOT))}\', {randrange(DATE_START_OFFSET, 0)})"), randbytes(32)])
+
+# day_type_names
+l = logger()
+keys = ["ID", "DayName"]
+insert("day_type_names", keys, (1, 'tanulásra készülő nap'))
+insert("day_type_names", keys, (2, 'tanuló nap'))
+insert("day_type_names", keys, (3, 'tanulást befejező nap'))
+insert("day_type_names", keys, (4, 'tanulásmentes nap'))
+l("day_type_names")
+
+# lessons
+l = logger()
+keys = ["VersionID", "LessonNum", "StartTime", "EndTime"]
+insert("lessons", keys, (1, 1, '16:00:00', '16:45:00'))
+insert("lessons", keys, (1, 2, '16:50:00', '16:35:00'))
+insert("lessons", keys, (1, 3, '16:40:00', '17:25:00'))
+insert("lessons", keys, (1, 4, '17:30:00', '18:15:00'))
+insert("lessons", keys, (2, 1, '16:05:00', '16:50:00'))
+insert("lessons", keys, (2, 2, '16:55:00', '16:40:00'))
+insert("lessons", keys, (2, 3, '16:45:00', '17:30:00'))
+insert("lessons", keys, (2, 4, '17:35:00', '18:20:00'))
+l("lessons")
+
+# day_type
+# TODO: nem logikus a szerkesztettsége az "órarendnek" -> fix
+l = logger()
+keys = ["ID", "TypeID", "DayStart", "RoomRating", "MiddayAttendance", "DayArrival", "LessonsVersion", "NightArrivalRed", "NightArrivalYellow", "NightEnd", "EveningAttendance", "BreakfastStart", "BreakfastEnd", "DinnerStart", "DinnerEnd", "SupperStart", "SupperEnd", "ActiveOn"]
+insert("day_type", keys, (1, 1, '8:00:00', '8:00:00', '12:00:00', '15:45:00', 1, '20:15:00', '21:00:00', '22:00:00', '22:30:00', '6:00:00', '8:00:00', '13:00:00', '15:45:00', '18:00:00', '20:00:00', dbfunction("ADDDATE(CURDATE(), -1)")))
+insert("day_type", keys, (2, 2, '6:00:00', '8:00:00', '12:00:00', '15:45:00', 2, '20:15:00', '21:00:00', '22:00:00', '22:30:00', '6:00:00', '8:00:00', '13:00:00', '15:45:00', '18:00:00', '20:00:00', dbfunction("CURDATE()")))
+insert("day_type", keys, (3, 3, '8:00:00', '8:00:00', '12:00:00', '15:45:00', 1, '20:15:00', '21:00:00', '22:00:00', '22:30:00', '6:00:00', '8:00:00', '13:00:00', '15:45:00', '18:00:00', '20:00:00', dbfunction("ADDDATE(CURDATE(), 3)")))
+insert("day_type", keys, (4, 4, '8:00:00', '8:00:00', '12:00:00', '15:45:00', 1, '20:15:00', '21:00:00', '22:00:00', '22:30:00', '6:00:00', '8:00:00', '13:00:00', '15:45:00', '18:00:00', '20:00:00', dbfunction("ADDDATE(CURDATE(), 3)")))
+l("day_type")
+
+# date
+l = logger()
+for offset in range(DATE_START_OFFSET, DATE_END_OFFSET):
+  d = (date(*DATE_PIVOT) + timedelta(days=offset)).weekday()
+  dtype = -1
+  try:
+    dtype = [6, -1, 4, 5].index(d) + 1
+  except ValueError:
+    dtype = 2
+  insert("date", ["DateID", "DayTypeID"], [dbfunction(f"ADDDATE(\'{'-'.join(map(str, DATE_PIVOT))}\', {offset})"), dtype])
+l("date")
+
+# program_types
+l = logger()
+cur.execute("SELECT RID FROM dorm_room")
+rids = set(range(1, MAX_RID))
+for (rid,) in cur:
+  rids.remove(rid)
+for programTypeN in range(1, PROGRAM_TYPES_COUNT + 1):
+  cur.execute("SELECT UID FROM teacher ORDER BY RAND() LIMIT 1")
+  programType = {
+    "ID": programTypeN,
+    "Type": 1 if programTypeN <= MANDATORY_PROGRAM_COUNT else 2,
+    "Topic": randomValue("topic"),
+    "RID": rids.pop(),
+    "TUID": cur.fetchone()[0]
+  }
+  insert("program_types", programType)
+l("program_types")
+
+# program
+l = logger()
+for programN in range(1, PROGRAM_COUNT + 1):
+  cur.execute("SELECT ID FROM program_types ORDER BY RAND() LIMIT 1")
+  program = {
+    "ID": programN,
+    "ProgramID": cur.fetchone()[0],
+    "Date": dbfunction(f"ADDDATE(\'{'-'.join(map(str, DATE_PIVOT))}\', {randrange(DATE_START_OFFSET, DATE_END_OFFSET)})"),
+  }
+  program["Length"] = randint(1, 2)
+  program["Lesson"] = randint(1, (4 - program["Length"] + 1))
+  insert("program", program)
+l("program")
+
+# mandatory_program
+# TODO: SQL query egyből(INSERT INTO SELECT...)
+l = logger()
+helperCur = conn.cursor()
+cur.execute("SELECT program.ID FROM program LEFT JOIN program_types ON program.ProgramID = program_types.ID WHERE Type = 1")
+for (mandatoryID,) in cur:
+  helperCur.execute("SELECT ID FROM class ORDER BY RAND() LIMIT 1")
+  insert("mandatory_program", ["ID", "ClassID"], [mandatoryID, helperCur.fetchone()[0]])
+l("mandatory_program")
+
+# study_group_program
+l = logger()
+cur.execute("INSERT INTO study_group_program SELECT program.ID FROM program LEFT JOIN program_types ON program.ProgramID = program_types.ID WHERE Type = 2")
+conn.commit()
+l("study_group_program")
+
+# study_group_attendees
+l = logger()
+cur.execute("SELECT ID FROM study_group_program")
+for (studyGroupID,) in cur:
+  helperCur.execute("SELECT ID FROM `program_types` WHERE Type=2 ORDER BY RAND() LIMIT 1")
+  attendees = {
+    "ID": studyGroupID,
+    "GroupID": helperCur.fetchone()[0]
+  }
+  helperCur.execute(f"SELECT UID FROM student WHERE GroupID = {attendees['GroupID']} ORDER BY RAND() LIMIT 1")
+  attendees["UID"] = helperCur.fetchone()[0] # None lehet kis eséllyel, ha random módón nem osztja ki az adott programot
+  insert("study_group_attendees", attendees)
+l("study_group_attendees")
 
 
-for table in dummy:
-  for obj in dummy[table]:
-    line = 'INSERT INTO `' + table + '` ('
-    for v in list(obj.keys()):
-      line += '`' + v + '`, '
-    line = line[:-2]
-    line += ') VALUES ('
-    for v in obj.values():
-      if type(v) == str and not v.startswith('b\'') and not (v.startswith('ADDDATE') or v.startswith('CURDATE')):
-        line += '\'' + v.replace('\\', '\\\\').replace('\'', '\\\'') + '\''
-      elif type(v) == str and (v.startswith('ADDDATE') or v.startswith('CURDATE')):
-        line += v
-      elif type(v) == str:
-        line += v
-      else:
-        line += str(v)
-      line += ', '
-    line = line[:-2]
-    line += ');'
-    print(line)
+helperCur.close()
+cur.close()
+insertionCur.close()
+conn.close()
