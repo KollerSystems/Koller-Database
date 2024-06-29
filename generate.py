@@ -1,48 +1,63 @@
-# TODO: dokumentáció
 # TODO: multithreading
 # TODO: optimalizáció -> for loopban fetchone helyett fetchmany és azokat használni míg "el nem fogy" a kapott lista
 
 import mariadb
 import sys
-from random import randrange, randint, randbytes
+from random import randrange, randint
 from json import loads
 from math import ceil
-from datetime import date, timedelta, time as timeclass
+from datetime import date, timedelta, time
 from time import time
 
 
 ### CONFIG ###
-# PARAMETERS
+## PARAMETERS
 
+# táblanevek, amelyeket white/blacklisteljen
 listed = []
+# blacklist-ként működjön-e
 isBlackList = True
 
-# PARAMETERS
-# GLOBAL CONSTANTS
+## PARAMETERS
+## GLOBAL CONSTANTS
 
+# "user" táblába generálandó sorok száma
 USER_COUNT = 1000
+# "teacher" - tanárok száma (jelen kódbázisban az első n darab user)
 TEACHER_COUNT = 50
 
+# "professions" táblába generált sorok száma
 PROFESSIONS_COUNT = 4
 
+# "dorm_room" - összes, akár kihasználatlan szobák száma
 ROOM_COUNT = int((USER_COUNT - TEACHER_COUNT) / 4) + 100
+# "groups" - generálandó csoportok száma
 GROUP_COUNT = int(ROOM_COUNT // 2 + 1)
 
+# egy szobában levő maximális ágyak száma
 BED_COUNT = 4
 
+# DATE_PIVOT-hoz hozzáadott napszám, minimális random érték
 DATE_START_OFFSET = -25
-DATE_PIVOT = [date.today().year, date.today().month, date.today().day] # [év, hónap, nap]
+# dátum amit generálás középpontjába vesz dátumok esetén
+DATE_PIVOT = [date.today().year, date.today().month, date.today().day] # forma: [év, hónap, nap]
+# DATE_PIVOT-hoz hozzáadott napszám, maximális random érték
 DATE_END_OFFSET = 200
 
+# "crossings"-ba ennyi sort generál
 CROSSINGS_PER_DAY_COUNT = 100
 
+# "program_types"-ba generálandó sorok száma
 PROGRAM_TYPES_COUNT = 100
+# "mandatory_program" generált programokból mennyi legyen alapprogram
 MANDATORY_PROGRAM_COUNT = 40
+# legnagyobb RID(egy szám) ami lehetséges
 MAX_RID = 2**16 # smallint
 
+# "program" tábla sorainak száma
 PROGRAM_COUNT = (abs(DATE_START_OFFSET) + abs(DATE_END_OFFSET)) * 4 * 25 + 40
 
-# GLOBAL CONSTANTS
+## GLOBAL CONSTANTS
 ### CONFIG ###
 
 
@@ -77,8 +92,8 @@ def itShouldAdd(name):
   verdict = name in listed
   return (not verdict if isBlackList else verdict)
 
-
-TESTCOUNT = 18
+# mérés előttre " l = logger() " ; végére " l("mérés neve") "
+TESTCOUNT = 18 # összes futtatandó generálás / logger hívások száma
 curTestNum = -1
 def progress():
   global curTestNum
@@ -94,7 +109,7 @@ def logger():
     print(name.ljust(30, " ") + "| ~%i ms" % round(took * 1000))
   return log
 
-
+# speciális típus amit insert() megkülönböztet, ezáltal a szószerinti(idézőjelek nélküli szövegek, függvények(CURDATE, COALESCE) érékként feltüntetésére van)
 class dbfunction:
   def __init__(self, value):
     self.value = str(value)
@@ -103,6 +118,8 @@ class dbfunction:
   def __repr__(self):
     return self.value
 
+# egy sor adatbázisba, táblába írása, kétféle használat(de mindig első paraméter a tábla neve ahova írandó adat)
+# egy paraméter esetén dictionary -> {mezőnév: értéke} ; kettő esetében két list vagy tuple -> ["mezőnév1", "mezőnév2"], ["mezőnév1értéke", "mezőnév2értéke"]
 def insert(table, *args):
   if not itShouldAdd(table):
     return
@@ -293,10 +310,9 @@ for offset in range(DATE_START_OFFSET, DATE_END_OFFSET + 1):
     insert("crossings", crossing)
 l("crossings")
 
-# TODO: mifare_tags
-# cur.execute("SELECT UID FROM user")
-# for (uid,) in cur:
-#   insert("mifare_tags", ["UID", "Issued", "Bytes"], [uid, dbfunction(f"ADDDATE(\'{'-'.join(map(str, DATE_PIVOT))}\', {randrange(DATE_START_OFFSET, 0)})"), randbytes(32)])
+cur.execute("SELECT UID FROM user")
+for (uid,) in cur:
+  insert("mifare_tags", ["UID", "Issued", "Bytes"], [uid, dbfunction(f"ADDDATE(\'{'-'.join(map(str, DATE_PIVOT))}\', {randrange(DATE_START_OFFSET, 0)})"), ''.join([ chr(randint(97, 122)) for _ in range(32) ])])
 
 # day_type_names
 l = logger()
