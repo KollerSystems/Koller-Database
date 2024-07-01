@@ -11,11 +11,11 @@ INSERT INTO `user` (`UID`, `Role`, `Name`, `Gender`, `OM`) VALUES
   (6, 1, 'Varró Liza', b'0', '77685796872'),
   (7, 1, 'Páter Zsófia Édua', b'0', '77348695718');
 
-INSERT INTO `auth` (`UID`, `access_token`, `expires`, `expired`) VALUES
-  (1, 'P8kj-8K7kJM-hT9RQDUH8L-v..01.yy2', 4294967295, b'0'),
-  (3, '/HSM/Jgh74lf7ygp3_Id6C4~~xe5M53R', 4294967295, b'0'),
-  (6, '/5.Q~RhtNkd.M/w4txuP35rmDKkddXu2', 4294967295, b'0'),
-  (5, 'Anca577M3u.~un7z~j9pj3/67rsF/~/3', 4294967295, b'0');
+INSERT INTO `auth` (`UID`, `access_token`, `refresh_token`, `expires`, `expired`) VALUES
+  (1, 'P8kj-8K7kJM-hT9RQDUH8L-v..01.yy2', NULL, 4294967295, b'0'),
+  (3, '/HSM/Jgh74lf7ygp3_Id6C4~~xe5M53R', NULL, 4294967295, b'0'),
+  (6, '/5.Q~RhtNkd.M/w4txuP35rmDKkddXu2', 'VZ7R0ChS93Sr46y7lXYQUSnb0A7Np/ZT', 4294967295, b'0'),
+  (5, 'Anca577M3u.~un7z~j9pj3/67rsF/~/3', NULL, 4294967295, b'0');
 
 INSERT INTO `class` (`ID`, `Class`) VALUES
   (1, '11.B'),

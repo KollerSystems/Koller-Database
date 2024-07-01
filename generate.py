@@ -14,9 +14,9 @@ from time import time
 ## PARAMETERS
 
 # táblanevek, amelyeket white/blacklisteljen
-listed = []
+LISTED = []
 # blacklist-ként működjön-e
-isBlackList = True
+ISBLACKLIST = True
 
 ## PARAMETERS
 ## GLOBAL CONSTANTS
@@ -89,11 +89,11 @@ def bstb(bitstring):
   return bitstring == b'\x01'
 
 def itShouldAdd(name):
-  verdict = name in listed
-  return (not verdict if isBlackList else verdict)
+  verdict = name in LISTED
+  return (not verdict if ISBLACKLIST else verdict)
 
 # mérés előttre " l = logger() " ; végére " l("mérés neve") "
-TESTCOUNT = 18 # összes futtatandó generálás / logger hívások száma
+TESTCOUNT = 19 # összes futtatandó generálás / logger hívások száma
 curTestNum = -1
 def progress():
   global curTestNum
@@ -154,6 +154,11 @@ def insert(table, *args):
   conn.commit()
 
 
+# role_names
+l = logger()
+insert("role_name", ["Role", "Table", "Fullname"], [1, "student", "kollégiumi diák"])
+insert("role_name", ["Role", "Table", "Fullname"], [2, "teacher", "kollégiumi tanár"])
+l("role_name")
 
 # professions
 l = logger()
