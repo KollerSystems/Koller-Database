@@ -15,7 +15,8 @@ INSERT INTO `auth` (`UID`, `access_token`, `refresh_token`, `expires`, `expired`
   (1, 'P8kj-8K7kJM-hT9RQDUH8L-v..01.yy2', NULL, 4294967295, b'0'),
   (3, '/HSM/Jgh74lf7ygp3_Id6C4~~xe5M53R', NULL, 4294967295, b'0'),
   (6, '/5.Q~RhtNkd.M/w4txuP35rmDKkddXu2', 'VZ7R0ChS93Sr46y7lXYQUSnb0A7Np/ZT', 4294967295, b'0'),
-  (5, 'Anca577M3u.~un7z~j9pj3/67rsF/~/3', NULL, 4294967295, b'0');
+  (5, 'Anca577M3u.~un7z~j9pj3/67rsF/~/3', NULL, 4294967295, b'0'),
+  (1, '/2.L//Rht/sbad/k5txuP93vdskDdXu2', NULL, 1, b'1');
 
 INSERT INTO `class` (`ID`, `Class`) VALUES
   (1, '11.B'),
