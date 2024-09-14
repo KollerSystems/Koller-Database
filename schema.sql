@@ -10,12 +10,12 @@ CREATE DATABASE IF NOT EXISTS `kollegium`;
 USE `kollegium`;
 
 CREATE TABLE IF NOT EXISTS `auth` (
-  `UID` int(15) unsigned NOT NULL,
+  `UID` int unsigned NOT NULL,
   `access_token` varchar(32) DEFAULT NULL,
   `refresh_token` varchar(32) DEFAULT NULL,
-  `expires` int(10) unsigned DEFAULT NULL,
+  `expires` int unsigned DEFAULT NULL,
   `issued` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `expired` bit(1) NOT NULL DEFAULT b'0',
+  `expired` boolean NOT NULL DEFAULT false,
   FOREIGN KEY (`UID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS `errors` (
 );
 
 CREATE TABLE IF NOT EXISTS `crossings` (
-  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
-  `UID` int(15) unsigned NOT NULL,
+  `ID` int unsigned NOT NULL AUTO_INCREMENT,
+  `UID` int unsigned NOT NULL,
   `Time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `Direction` bit(1) NOT NULL,
   PRIMARY KEY (`ID`),
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `crossings` (
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `login_data` (
-  `UID` int(15) unsigned NOT NULL,
+  `UID` int unsigned NOT NULL,
   `Username` text DEFAULT NULL,
   `Password` text DEFAULT NULL,
   PRIMARY KEY (`UID`) USING BTREE,
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `login_data` (
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `mifare_tags` (
-  `UID` int(15) unsigned NOT NULL,
+  `UID` int unsigned NOT NULL,
   `Issued` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `Bytes` tinyblob NOT NULL,
   PRIMARY KEY (`Bytes`(32)),
@@ -52,65 +52,65 @@ CREATE TABLE IF NOT EXISTS `mifare_tags` (
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `permissions` (
-  `Role` tinyint(1) NOT NULL,
+  `Role` tinyint NOT NULL,
   `Table` varchar(64) NOT NULL,
   `Field` varchar(64) NOT NULL,
-  `Read` bit(1) NOT NULL DEFAULT b'0',
-  `Write` bit(1) NOT NULL DEFAULT b'0',
+  `Read` boolean NOT NULL DEFAULT false,
+  `Write` boolean NOT NULL DEFAULT false,
   KEY `Table` (`Table`,`Field`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `route_access` (
-  `Role` tinyint(1) NOT NULL,
+  `Role` tinyint NOT NULL,
   `Route` varchar(128) NOT NULL,
-  `Accessible` bit(1) NOT NULL DEFAULT b'0',
-  `Hide` bit(1) NOT NULL DEFAULT b'0',
+  `Accessible` boolean NOT NULL DEFAULT false,
+  `Hide` boolean NOT NULL DEFAULT false,
   KEY `Access` (`Role`,`Route`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `class` (
-  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+  `ID` int unsigned NOT NULL AUTO_INCREMENT,
   `Class` varchar(4) DEFAULT NULL,
-  `Old` bit(1) NOT NULL DEFAULT b'0',
+  `Old` boolean NOT NULL DEFAULT false,
   PRIMARY KEY(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `group` (
-  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+  `ID` int unsigned NOT NULL AUTO_INCREMENT,
   `Group` varchar(4) DEFAULT NULL,
-  `Old` bit(1) NOT NULL DEFAULT b'0',
-  `HeadTUID` int(15) unsigned NOT NULL,
+  `Old` boolean NOT NULL DEFAULT false,
+  `HeadTUID` int unsigned NOT NULL,
   PRIMARY KEY(`ID`),
   FOREIGN KEY (`HeadTUID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `dorm_room` (
-  `RID` smallint(5) unsigned NOT NULL,
-  `AID` smallint(2) unsigned NOT NULL,
-  `Floor` tinyint(2) unsigned DEFAULT NULL,
-  `GroupID` integer(15) unsigned NOT NULL,
+  `RID` smallint unsigned NOT NULL,
+  `AID` smallint unsigned NOT NULL,
+  `Floor` tinyint unsigned DEFAULT NULL,
+  `GroupID` integer unsigned NOT NULL,
   PRIMARY KEY (`RID`),
   FOREIGN KEY (`AID`) REFERENCES `annexe`(`ID`),
   FOREIGN KEY (`GroupID`) REFERENCES `group`(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `annexe` (
-  `ID` smallint(2) unsigned NOT NULL AUTO_INCREMENT,
+  `ID` smallint unsigned NOT NULL AUTO_INCREMENT,
   `Annexe` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `resident` (
-  `UID` int(15) unsigned NOT NULL,
-  `RID` smallint(5) unsigned NOT NULL,
-  `BedNum` tinyint(1) unsigned DEFAULT NULL,
+  `UID` int unsigned NOT NULL,
+  `RID` smallint unsigned NOT NULL,
+  `BedNum` tinyint unsigned DEFAULT NULL,
   PRIMARY KEY (`UID`),
   UNIQUE KEY RoomPosition (`RID`, `BedNum`),
   FOREIGN KEY (`UID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `role_name` (
-  `Role` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `Role` tinyint unsigned NOT NULL DEFAULT 0,
   `Table` varchar(64) NOT NULL,
   `FullName` text DEFAULT NULL,
   PRIMARY KEY (`Role`),
@@ -118,43 +118,43 @@ CREATE TABLE IF NOT EXISTS `role_name` (
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `room_order` (
-  `ID` int(15) NOT NULL AUTO_INCREMENT,
-  `RatingTUID` int(15) unsigned DEFAULT NULL,
-  `RID` smallint(5) unsigned NOT NULL,
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `RatingTUID` int unsigned DEFAULT NULL,
+  `RID` smallint unsigned NOT NULL,
   `Time` datetime DEFAULT NULL,
-  `Floor` tinyint(4) DEFAULT NULL,
-  `Windows` binary(2) DEFAULT NULL,
-  `Beds` tinyint(4) unsigned DEFAULT NULL,
-  `Depower` binary(2) DEFAULT NULL,
-  `Table` tinyint(4) unsigned DEFAULT NULL,
-  `Fridge` tinyint(4) unsigned DEFAULT NULL,
-  `Trash` binary(2) DEFAULT NULL,
-  `Air` tinyint(4) unsigned DEFAULT NULL,
-  `Shelves` tinyint(4) unsigned DEFAULT NULL,
-  `Tidiness` tinyint(4) unsigned DEFAULT NULL,
-  `Unwashed` binary(2) DEFAULT NULL,
+  `Floor` tinyint DEFAULT NULL,
+  `Windows` boolean DEFAULT NULL,
+  `Beds` tinyint unsigned DEFAULT NULL,
+  `Depowder` boolean DEFAULT NULL,
+  `Table` tinyint unsigned DEFAULT NULL,
+  `Fridge` tinyint unsigned DEFAULT NULL,
+  `Trash` boolean DEFAULT NULL,
+  `Air` tinyint unsigned DEFAULT NULL,
+  `Shelves` tinyint unsigned DEFAULT NULL,
+  `Tidiness` tinyint unsigned DEFAULT NULL,
+  `Unwashed` boolean DEFAULT NULL,
   PRIMARY KEY (`ID`),
   FOREIGN KEY (`RatingTUID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `student` (
-  `UID` int(15) unsigned NOT NULL,
-  `GroupID` int(15) unsigned NOT NULL,
-  `ClassID` int(15) unsigned NOT NULL,
+  `UID` int unsigned NOT NULL,
+  `GroupID` int unsigned NOT NULL,
+  `ClassID` int unsigned NOT NULL,
   `School` text DEFAULT NULL,
   `Birthplace` text DEFAULT NULL,
   `Birthdate` date DEFAULT NULL,
   `GuardianName` text DEFAULT NULL,
   `GuardianPhone` varchar(50) DEFAULT NULL,
-  `RID` smallint(5) unsigned NOT NULL,
+  `RID` smallint unsigned NOT NULL,
   `Country` text DEFAULT NULL,
   `City` text DEFAULT NULL,
   `Street` text DEFAULT NULL,
-  `PostCode` int(11) unsigned DEFAULT NULL,
-  `Address` int(10) unsigned DEFAULT NULL,
-  `Floor` int(11) unsigned DEFAULT NULL,
-  `Door` int(11) unsigned DEFAULT NULL,
-  `ContactID` int(15) unsigned,
+  `PostCode` int unsigned DEFAULT NULL,
+  `Address` int unsigned DEFAULT NULL,
+  `Floor` int unsigned DEFAULT NULL,
+  `Door` int unsigned DEFAULT NULL,
+  `ContactID` int unsigned,
   PRIMARY KEY (`UID`) USING BTREE,
   FOREIGN KEY (`UID`) REFERENCES user(`UID`),
   FOREIGN KEY (`GroupID`) REFERENCES `group`(`ID`),
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `student` (
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `contacts` (
-  `ID` int(15) unsigned NOT NULL,
+  `ID` int unsigned NOT NULL,
   `Discord` tinytext DEFAULT NULL,
   `Facebook` tinytext DEFAULT NULL,
   `Instagram` tinytext DEFAULT NULL,
@@ -172,52 +172,52 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `professions` (
-  `PID` int(15) unsigned NOT NULL,
+  `PID` int unsigned NOT NULL,
   `Name` tinytext NOT NULL,
   `Description` text DEFAULT NULL,
   PRIMARY KEY (`PID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `user` (
-  `UID` int(15) unsigned NOT NULL AUTO_INCREMENT,
-  `Role` tinyint(1) unsigned DEFAULT 0,
+  `UID` int unsigned NOT NULL AUTO_INCREMENT,
+  `Role` tinyint unsigned DEFAULT 0,
   `Name` text DEFAULT NULL,
   `OM` varchar(11) DEFAULT NULL,
   `Picture` text DEFAULT NULL,
-  `Gender` tinyint(1) unsigned NOT NULL,
+  `Gender` tinyint unsigned NOT NULL,
   PRIMARY KEY (`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `teacher` (
-  `UID` int(15) unsigned NOT NULL,
-  `PID` int(15) unsigned NOT NULL,
+  `UID` int unsigned NOT NULL,
+  `PID` int unsigned NOT NULL,
   PRIMARY KEY (`UID`) USING BTREE,
   FOREIGN KEY (`UID`) REFERENCES user(`UID`),
   FOREIGN KEY (`PID`) REFERENCES professions(`PID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `day_type_names` (
-  `ID` int(15) unsigned NOT NULL,
+  `ID` int unsigned NOT NULL,
   `DayName` varchar(255) NOT NULL,
   PRIMARY KEY (`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `lessons` (
-  `VersionID` int(15) unsigned,
-  `LessonNum` tinyint(1),
+  `VersionID` int unsigned,
+  `LessonNum` tinyint,
   `StartTime` time,
   `EndTime` time,
   KEY (`VersionID`, `LessonNum`)
 );
 
 CREATE TABLE IF NOT EXISTS `day_type` (
-  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
-  `TypeID` int(15) unsigned NOT NULL,
+  `ID` int unsigned NOT NULL AUTO_INCREMENT,
+  `TypeID` int unsigned NOT NULL,
   `DayStart` time,
   `RoomRating` time,
   `MiddayAttendance` time,
   `DayArrival` time,
-  `LessonsVersion` int(15) unsigned,
+  `LessonsVersion` int unsigned,
   `NightArrivalRed` time,
   `NightArrivalYellow` time,
   `NightEnd` time,
@@ -236,24 +236,24 @@ CREATE TABLE IF NOT EXISTS `day_type` (
 
 CREATE TABLE IF NOT EXISTS `date` (
   `DateID` DATE NOT NULL,
-  `DayTypeID` int(15) unsigned NOT NULL,
+  `DayTypeID` int unsigned NOT NULL,
   PRIMARY KEY (`DateID`),
   FOREIGN KEY (`DayTypeID`) REFERENCES day_type(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `program_types` (
-  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
+  `ID` int unsigned NOT NULL AUTO_INCREMENT,
   `Type` tinyint unsigned NOT NULL,
   `Topic` text NOT NULL,
-  `RID` smallint(5) unsigned NOT NULL,
-  `TUID` int(15) unsigned NOT NULL,
+  `RID` smallint unsigned NOT NULL,
+  `TUID` int unsigned NOT NULL,
   PRIMARY KEY (`ID`),
   FOREIGN KEY (`TUID`) REFERENCES user(`UID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `program` (
-  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
-  `ProgramID` int(15) unsigned NOT NULL,
+  `ID` int unsigned NOT NULL AUTO_INCREMENT,
+  `ProgramID` int unsigned NOT NULL,
   `Date` DATE NOT NULL,
   `Lesson` tinyint unsigned NOT NULL,
   `Length` tinyint unsigned NOT NULL DEFAULT 1,
@@ -263,22 +263,22 @@ CREATE TABLE IF NOT EXISTS `program` (
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `mandatory_program` (
-  `ID` int(15) unsigned NOT NULL,
-  `ClassID` int(15) unsigned NOT NULL,
+  `ID` int unsigned NOT NULL,
+  `ClassID` int unsigned NOT NULL,
   PRIMARY KEY (`ID`),
   FOREIGN KEY (`ID`) REFERENCES program(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `study_group_program` (
-  `ID` int(15) unsigned NOT NULL,
+  `ID` int unsigned NOT NULL,
   PRIMARY KEY (`ID`),
   FOREIGN KEY (`ID`) REFERENCES program(`ID`)
 ) DEFAULT COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `study_group_attendees` (
-  `ID` int(15) unsigned NOT NULL AUTO_INCREMENT,
-  `UID` int(15) unsigned NOT NULL,
-  `GroupID` int(15) unsigned NOT NULL,
+  `ID` int unsigned NOT NULL AUTO_INCREMENT,
+  `UID` int unsigned NOT NULL,
+  `GroupID` int unsigned NOT NULL,
   PRIMARY KEY (`ID`),
   FOREIGN KEY (`UID`) REFERENCES user(`UID`),
   FOREIGN KEY (`GroupID`) REFERENCES program_types(`ID`)
