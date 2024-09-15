@@ -291,3 +291,11 @@ INSERT INTO `route_access` VALUES (1, '/api/timetable/mandatory/types', true, fa
 INSERT INTO `route_access` VALUES (2, '/api/timetable/mandatory/types', true, false);
 INSERT INTO `route_access` VALUES (1, '/api/timetable/mandatory/types/:id', true, false);
 INSERT INTO `route_access` VALUES (2, '/api/timetable/mandatory/types/:id', true, false);
+INSERT INTO `route_access` VALUES (1, '/api/timetable/studygroup', true, false);
+INSERT INTO `route_access` VALUES (2, '/api/timetable/studygroup', false, true);
+INSERT INTO `route_access` VALUES (1, '/api/timetable/studygroup/:id', true, false);
+INSERT INTO `route_access` VALUES (2, '/api/timetable/studygroup/:id', false, true);
+INSERT INTO `route_access` VALUES (1, '/api/timetable/studygroup/types', true, false);
+INSERT INTO `route_access` VALUES (2, '/api/timetable/studygroup/types', true, false);
+INSERT INTO `route_access` VALUES (1, '/api/timetable/studygroup/types/:id', true, false);
+INSERT INTO `route_access` VALUES (2, '/api/timetable/studygroup/types/:id', true, false);
